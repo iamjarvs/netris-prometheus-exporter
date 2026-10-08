@@ -140,10 +140,15 @@ if [ "$MODE" = "sim" ]; then
     echo -e "[*] Netris Controller:        ${BOLD}Bypassed (No network connection required)${NC}"
 
     if [ ! -f "$SIM_DATA_FILE" ]; then
-        echo -e "${RED}[-] Error: Recording file '${SIM_DATA_FILE}' does not exist!${NC}"
-        echo -e "${YELLOW}[!] To generate a simulation recording, connect to Netris and run:${NC}"
-        echo -e "    ${BOLD}./record.sh 60 15${NC} (or ./start.sh --record 60 15)"
-        exit 1
+        if [ -f "${SIM_DATA_FILE}.gz" ]; then
+            echo "[*] Decompressing $SIM_DATA_FILE.gz..."
+            gunzip -k "${SIM_DATA_FILE}.gz"
+        else
+            echo -e "${RED}[-] Error: Recording file '${SIM_DATA_FILE}' does not exist!${NC}"
+            echo -e "${YELLOW}[!] To generate a simulation recording, connect to Netris and run:${NC}"
+            echo -e "    ${BOLD}./record.sh 60 15${NC} (or ./start.sh --record 60 15)"
+            exit 1
+        fi
     fi
 
     # Historical Backfill (Pre-populates Prometheus TSDB blocks)
